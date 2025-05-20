@@ -1,70 +1,60 @@
 import streamlit as st
 
-# Dictionaries for conversion factors
-conversion_factors = {
-    "Length": {
-        "meter": 1.0,
-        "kilometer": 1000.0,
-        "centimeter": 0.01,
-        "millimeter": 0.001,
-        "mile": 1609.34,
-        "yard": 0.9144,
-        "foot": 0.3048,
-        "inch": 0.0254
-    },
-    "Weight": {
-        "kilogram": 1.0,
-        "gram": 0.001,
-        "milligram": 0.000001,
-        "pound": 0.453592,
-        "ounce": 0.0283495
-    },
-    "Temperature": {
-        "celsius": "celsius",
-        "fahrenheit": "fahrenheit",
-        "kelvin": "kelvin"
-    }
-}
+st.title('Unit Converter')
 
-# Function to convert temperature
-def convert_temperature(value, from_unit, to_unit):
-    if from_unit == to_unit:
-        return value
-    if from_unit == "celsius":
-        if to_unit == "fahrenheit":
-            return (value * 9/5) + 32
-        elif to_unit == "kelvin":
-            return value + 273.15
-    elif from_unit == "fahrenheit":
-        if to_unit == "celsius":
-            return (value - 32) * 5/9
-        elif to_unit == "kelvin":
-            return (value - 32) * 5/9 + 273.15
-    elif from_unit == "kelvin":
-        if to_unit == "celsius":
-            return value - 273.15
-        elif to_unit == "fahrenheit":
-            return (value - 273.15) * 9/5 + 32
+def meters_to_feet(meters):
+    return meters * 3.28084
 
-# Streamlit UI
-st.set_page_config(page_title="Unit Converter", layout="centered")
-st.title("🔄 Google Style Unit Converter")
+def feet_to_meters(feet):
+    return feet / 3.28084
 
-category = st.selectbox("Select a category", list(conversion_factors.keys()))
+def sq_meters_to_sq_feet(sq_meters):
+    return sq_meters * 10.7639
 
-units = list(conversion_factors[category].keys())
+def sq_feet_to_sq_meters(sq_feet):
+    return sq_feet / 10.7639
 
-from_unit = st.selectbox("From Unit", units)
-to_unit = st.selectbox("To Unit", units)
+def gb_to_mb(gb):
+    return gb * 1024
 
-value = st.number_input(f"Enter value in {from_unit}", format="%.4f")
+def mb_to_gb(mb):
+    return mb / 1024
 
-if st.button("Convert"):
-    if category == "Temperature":
-        result = convert_temperature(value, from_unit, to_unit)
+option = st.selectbox('Select a measurement type:', ('Length', 'Area', 'Digital Storage'))
+
+if option == 'Length':
+    conversion = st.selectbox('Select conversion:', ('Meters to Feet', 'Feet to Meters'))
+    if conversion == 'Meters to Feet':
+        value = st.number_input('Enter value in meters:', value=0.0, key='meters')
+        if st.button('Calculate'):
+            result = meters_to_feet(value)
+            st.write(f'{value} meters is equal to {result:.2f} feet')
     else:
-        factor_from = conversion_factors[category][from_unit]
-        factor_to = conversion_factors[category][to_unit]
-        result = value * (factor_from / factor_to)
-
-    st.success(f"{value} {from_unit} = {result:.4f} {to_unit}")
+        value = st.number_input('Enter value in feet:', value=0.0, key='feet')
+        if st.button('Calculate'):
+            result = feet_to_meters(value)
+            st.write(f'{value} feet is equal to {result:.2f} meters')
+elif option == 'Area':
+    conversion = st.selectbox('Select conversion:', ('Square Meters to Square Feet', 'Square Feet to Square Meters'))
+    if conversion == 'Square Meters to Square Feet':
+        value = st.number_input('Enter value in square meters:', value=0.0, key='sq_meters')
+        if st.button('Calculate'):
+            result = sq_meters_to_sq_feet(value)
+            st.write(f'{value} square meters is equal to {result:.2f} square feet')
+    else:
+        value = st.number_input('Enter value in square feet:', value=0.0, key='sq_feet')
+        if st.button('Calculate'):
+            result = sq_feet_to_sq_meters(value)
+            st.write(f'{value} square feet is equal to {result:.2f} square meters')
+elif option == 'Digital Storage':
+    conversion = st.selectbox('Select conversion:', ('Gigabytes to Megabytes', 'Megabytes to Gigabytes'))
+    if conversion == 'Gigabytes to Megabytes':
+        value = st.number_input('Enter value in gigabytes:', value=0.0, key='gb')
+        if st.button('Calculate'):
+            result = gb_to_mb(value)
+            st.write(f'{value} gigabytes is equal to {result:.2f} megabytes')
+    else:
+        value = st.number_input('Enter value in megabytes:', value=0.0, key='mb')
+        if st.button('Calculate'):
+            result = mb_to_gb(value)
+            st.write(f'{value} megabytes is equal to {result:.2f} gigabytes')
